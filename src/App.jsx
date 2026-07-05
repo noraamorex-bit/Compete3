@@ -7,14 +7,15 @@ import CompetitionForm from "./components/CompetitionForm.jsx";
 import CompetitionDetails from "./components/CompetitionDetails.jsx";
 import ConfirmDialog from "./components/ConfirmDialog.jsx";
 import EmptyState from "./components/EmptyState.jsx";
-import Explore from "./components/Explore.jsx";
+import Explore, { CatalogCard } from "./components/Explore.jsx";
+import { CATALOG } from "./data/catalog.js";
 import { useCompetitions } from "./hooks/useCompetitions.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
 import { isClosingSoon, isPast, relativePhrase, timeLeft } from "./lib/date.js";
 import { exportJSON, parseImport } from "./lib/transfer.js";
 import { CLOSING_SOON_DAYS } from "./lib/constants.js";
-import { CalendarIcon, ClockIcon, SparkIcon, StarIcon, TrophyIcon } from "./components/Icons.jsx";
+import { CalendarIcon, ClockIcon, CompassIcon, SparkIcon, StarIcon, TrophyIcon } from "./components/Icons.jsx";
 
 const byDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
 const byNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
@@ -128,6 +129,23 @@ export default function App() {
     });
   }, [competitions, deferredQuery, filters, now]);
 
+  // Home search falls through to the catalog: matching entries the user
+  // isn't tracking (e.g. deleted earlier) appear with a Track button.
+  const catalogMatches = useMemo(() => {
+    const words = deferredQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const { category, favoritesOnly, mode, closingSoon } = filters;
+    if (!words.length || favoritesOnly || closingSoon) return [];
+    const trackedCat = new Set(competitions.map((c) => c.catalogId).filter(Boolean));
+    const trackedTitles = new Set(competitions.map((c) => c.title.toLowerCase()));
+    return CATALOG.filter((e) => {
+      if (trackedCat.has(e.id) || trackedTitles.has(e.title.toLowerCase())) return false;
+      if (category && e.category !== category) return false;
+      if (mode && e.mode !== mode && e.mode !== "hybrid") return false;
+      const hay = [e.title, e.organizer, e.description, e.prize, ...e.tags].join(" ").toLowerCase();
+      return words.every((w) => hay.includes(w));
+    });
+  }, [competitions, deferredQuery, filters]);
+
   const counts = useMemo(() => {
     const map = {};
     for (const c of competitions) map[c.category] = (map[c.category] ?? 0) + 1;
@@ -192,6 +210,13 @@ export default function App() {
     setFilters(NO_FILTERS);
   };
 
+  const goHome = () => {
+    clearFilters();
+    setDetailsId(null);
+    setExploreOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleExport = () => {
     exportJSON(competitions);
     notify(`Exported ${competitions.length} competition${competitions.length === 1 ? "" : "s"}`);
@@ -228,6 +253,7 @@ export default function App() {
         dark={dark}
         onToggleTheme={toggle}
         onAdd={() => setFormTarget("new")}
+        onHome={goHome}
         onExplore={() => setExploreOpen(true)}
         onExport={handleExport}
         onImportFile={handleImportFile}
@@ -272,7 +298,7 @@ export default function App() {
 
         <FilterBar filters={filters} onChange={setFilters} counts={counts} sort={sort} onSort={setSort} />
 
-        {visible.length === 0 ? (
+        {visible.length === 0 && catalogMatches.length === 0 ? (
           <EmptyState
             filtered={filtering}
             onAdd={() => setFormTarget("new")}
@@ -302,6 +328,16 @@ export default function App() {
             {closed.length > 0 && (
               <Section icon={ClockIcon} title="Closed" hint="past deadlines">
                 <Grid>{closed.map(renderCard)}</Grid>
+              </Section>
+            )}
+
+            {catalogMatches.length > 0 && (
+              <Section icon={CompassIcon} title="From the catalog" hint="not tracked yet">
+                <ul className="flex flex-col gap-3">
+                  {catalogMatches.map((e) => (
+                    <CatalogCard key={e.id} entry={e} tracked={false} onPick={(draft) => setFormTarget(draft)} />
+                  ))}
+                </ul>
               </Section>
             )}
           </>

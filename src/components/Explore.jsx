@@ -6,6 +6,63 @@ import { CalendarIcon, GlobeIcon, PinIcon, PlusIcon, TrophyIcon } from "./Icons.
 
 const usedCategories = CATEGORIES.filter((c) => CATALOG.some((e) => e.category === c.id));
 
+/** One catalog entry, shared by the Explore modal and home-page search results. */
+export function CatalogCard({ entry: e, tracked, onPick }) {
+  const c = categoryById(e.category);
+  return (
+    <li className="rounded-2xl border border-ink/[0.07] bg-mist/60 p-4 transition hover:border-ink/15 dark:border-night-edge dark:bg-night/50 dark:hover:border-night-soft/40">
+      <div className="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
+          style={{ background: `${c.dot}1a`, color: c.dot }}
+        >
+          <i className="h-1.5 w-1.5 rounded-full" style={{ background: c.dot }} />
+          {c.label}
+        </span>
+        <span className="rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
+          Classes {e.classes[0]}–{e.classes[1]}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
+          {e.mode === "online" ? <GlobeIcon size={12} /> : <PinIcon size={12} />}
+          {e.mode === "hybrid" ? "Hybrid" : e.mode === "online" ? "Online" : "Offline"}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
+          <CalendarIcon size={12} /> Reg: {regWindowLabel(e)}
+        </span>
+      </div>
+
+      <h4 className="mt-2.5 font-display text-[16.5px] font-bold leading-snug tracking-tight">
+        {e.title}
+      </h4>
+      <p className="text-[13px] text-ink-soft dark:text-night-soft">{e.organizer}</p>
+      <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft dark:text-night-soft">
+        {e.description}
+      </p>
+      <p className="mt-1.5 inline-flex items-start gap-1.5 text-[13px] text-ink-soft dark:text-night-soft">
+        <TrophyIcon size={14} className="mt-0.5 shrink-0 text-marigold" /> {e.prize}
+      </p>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <a
+          href={e.website}
+          target="_blank"
+          rel="noreferrer"
+          className="text-[13px] font-semibold text-marigold-deep underline decoration-marigold/40 underline-offset-2 hover:decoration-marigold dark:text-marigold"
+        >
+          {e.website.replace(/^https?:\/\/(www\.)?/, "")}
+        </a>
+        {tracked ? (
+          <span className="text-[13px] font-semibold text-leaf">✓ Tracked</span>
+        ) : (
+          <button onClick={() => onPick(toCompetition(e))} className="btn-primary !min-h-[36px] !px-3.5 !py-1.5 !text-[13px]">
+            <PlusIcon size={15} /> Track
+          </button>
+        )}
+      </div>
+    </li>
+  );
+}
+
 /**
  * Browsable catalog of real competitions for Classes 6–12 in India.
  * Filter by class, category, mode and typical registration month, then
@@ -83,65 +140,9 @@ export default function Explore({ onClose, onPick, trackedIds }) {
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {results.map((e) => {
-            const c = categoryById(e.category);
-            const tracked = trackedIds.has(e.id);
-            return (
-              <li
-                key={e.id}
-                className="rounded-2xl border border-ink/[0.07] bg-mist/60 p-4 transition hover:border-ink/15 dark:border-night-edge dark:bg-night/50 dark:hover:border-night-soft/40"
-              >
-                <div className="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-                  <span
-                    className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-                    style={{ background: `${c.dot}1a`, color: c.dot }}
-                  >
-                    <i className="h-1.5 w-1.5 rounded-full" style={{ background: c.dot }} />
-                    {c.label}
-                  </span>
-                  <span className="rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
-                    Classes {e.classes[0]}–{e.classes[1]}
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
-                    {e.mode === "online" ? <GlobeIcon size={12} /> : <PinIcon size={12} />}
-                    {e.mode === "hybrid" ? "Hybrid" : e.mode === "online" ? "Online" : "Offline"}
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2.5 py-1 text-ink-soft dark:bg-white/10 dark:text-night-soft">
-                    <CalendarIcon size={12} /> Reg: {regWindowLabel(e)}
-                  </span>
-                </div>
-
-                <h4 className="mt-2.5 font-display text-[16.5px] font-bold leading-snug tracking-tight">
-                  {e.title}
-                </h4>
-                <p className="text-[13px] text-ink-soft dark:text-night-soft">{e.organizer}</p>
-                <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft dark:text-night-soft">
-                  {e.description}
-                </p>
-                <p className="mt-1.5 inline-flex items-start gap-1.5 text-[13px] text-ink-soft dark:text-night-soft">
-                  <TrophyIcon size={14} className="mt-0.5 shrink-0 text-marigold" /> {e.prize}
-                </p>
-
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                  <a
-                    href={e.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[13px] font-semibold text-marigold-deep underline decoration-marigold/40 underline-offset-2 hover:decoration-marigold dark:text-marigold"
-                  >
-                    {e.website.replace(/^https?:\/\/(www\.)?/, "")}
-                  </a>
-                  {tracked ? (
-                    <span className="text-[13px] font-semibold text-leaf">✓ Tracked</span>
-                  ) : (
-                    <button onClick={() => onPick(toCompetition(e))} className="btn-primary !min-h-[36px] !px-3.5 !py-1.5 !text-[13px]">
-                      <PlusIcon size={15} /> Track
-                    </button>
-                  )}
-                </div>
-              </li>
-            );
-          })}
+          {results.map((e) => (
+            <CatalogCard key={e.id} entry={e} tracked={trackedIds.has(e.id)} onPick={onPick} />
+          ))}
         </ul>
       )}
     </Modal>

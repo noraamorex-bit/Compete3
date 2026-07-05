@@ -5,7 +5,7 @@ import {
 } from "./Icons.jsx";
 
 export default function Header({
-  query, onQuery, dark, onToggleTheme, onAdd, onExplore, onExport, onImportFile,
+  query, onQuery, dark, onToggleTheme, onAdd, onHome, onExplore, onExport, onImportFile,
 }) {
   const inputRef = useRef(null);
   const fileRef = useRef(null);
@@ -26,12 +26,17 @@ export default function Header({
   return (
     <header className="glass-header sticky top-0 z-30 bg-white/55 backdrop-blur-2xl dark:bg-night/60">
       <div className="mx-auto flex max-w-6xl items-center gap-2.5 px-4 py-3 sm:gap-3 sm:px-6">
-        <a href="#" className="group flex items-center gap-2.5" aria-label="Compete home">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-marigold to-marigold-deep text-white shadow-[0_6px_14px_-6px_rgba(199,124,8,.6)] transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-105">
+        <button
+          onClick={onHome}
+          className="group flex items-center gap-2.5"
+          aria-label="Go home — clear search and filters"
+          title="Home"
+        >
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-marigold to-marigold-deep text-white shadow-[0_6px_14px_-6px_rgba(199,124,8,.6)] transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-105 group-active:scale-95">
             <TrophyIcon size={18} />
           </span>
           <span className="wordmark hidden text-xl sm:block">Compete</span>
-        </a>
+        </button>
 
         <label className="relative ml-auto min-w-0 max-w-xs flex-1 sm:max-w-sm">
           <SearchIcon
