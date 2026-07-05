@@ -13,6 +13,8 @@
  *   the month filter and to suggest a tracking deadline. Exact dates vary
  *   by year; users should verify on the official site.
  * - annual: recurs every year, so tracked entries roll forward usefully.
+ * - aliases: other names the same event is commonly saved under — used to
+ *   de-duplicate against user-tracked items.
  */
 
 export const MONTH_NAMES = [
@@ -30,6 +32,7 @@ export const CATALOG = [
   {
     id: "sof-nso",
     title: "SOF National Science Olympiad",
+    aliases: ["National Science Olympiad", "NSO"],
     organizer: "Science Olympiad Foundation",
     category: "olympiad",
     classes: [1, 12],
@@ -184,7 +187,8 @@ export const CATALOG = [
   {
     id: "bebras",
     title: "Bebras Computational Thinking Challenge",
-    organizer: "Bebras International (India edition)",
+    aliases: ["Bebras India Challenge"],
+    organizer: "ACM India / CSpathshala (Bebras India)",
     category: "coding",
     classes: [3, 12],
     mode: "online",
@@ -252,7 +256,7 @@ export const CATALOG = [
   {
     id: "vvm",
     title: "Vidyarthi Vigyan Manthan",
-    organizer: "Vijnana Bharati, NCERT & NCSM",
+    organizer: "Vijnana Bharati (VIBHA) & NCERT",
     category: "science",
     classes: [6, 11],
     mode: "online",
@@ -489,6 +493,7 @@ export const CATALOG = [
   {
     id: "hmun-india",
     title: "Harvard Model United Nations India",
+    aliases: ["Harvard MUN India", "HMUN India"],
     organizer: "Harvard University & Worldview",
     category: "mun",
     classes: [9, 12],
@@ -593,12 +598,12 @@ export const CATALOG = [
     organizer: "Children's Book Trust",
     category: "arts",
     classes: [1, 11],
-    mode: "online",
+    mode: "hybrid",
     regMonths: [6, 7, 8, 9, 10],
     eventWindow: "Results the following year",
     website: "https://childrensbooktrust.com",
     description:
-      "Historic painting and writing competition (since 1949) for children under 16 worldwide.",
+      "Historic painting and writing competition (since 1949) for children under 16 worldwide; entries submitted through schools or by post.",
     prize: "Cash awards, medals & publication",
     annual: true,
     tags: ["painting", "writing", "heritage"],

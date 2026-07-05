@@ -23,6 +23,7 @@ const byName = (a, b) => a.title.localeCompare(b.title);
 const SORTERS = { deadline: byDeadline, name: byName, added: byNewest };
 
 const NO_FILTERS = { category: null, favoritesOnly: false, mode: null, closingSoon: false };
+const HOME_LIMIT = 30; // cards shown on the unfiltered home view
 
 /** Case-insensitive multi-word match: every word must appear somewhere. */
 function matchesQuery(c, words) {
@@ -167,14 +168,31 @@ export default function App() {
   }, [competitions, now]);
 
   const sorter = SORTERS[sort] ?? byDeadline;
-  const closingSoon = visible
+  let closingSoon = visible
     .filter((c) => isClosingSoon(c.deadline, CLOSING_SOON_DAYS, now))
     .sort(sorter);
-  const upcoming = visible
+  let upcoming = visible
     .filter((c) => timeLeft(c.deadline, now) > CLOSING_SOON_DAYS * 864e5)
     .sort(sorter);
-  const closed = visible.filter((c) => isPast(c.deadline, now)).sort(sorter);
+  let closed = visible.filter((c) => isPast(c.deadline, now)).sort(sorter);
   if (sort === "deadline") closed.reverse(); // most recently closed first
+
+  // The unfiltered home view caps at HOME_LIMIT cards (soonest first);
+  // the rest live one tap away in Explore. Searching/filtering shows all.
+  let hiddenCount = 0;
+  if (!filtering) {
+    const total = closingSoon.length + upcoming.length + closed.length;
+    hiddenCount = Math.max(0, total - HOME_LIMIT);
+    let budget = HOME_LIMIT;
+    const take = (arr) => {
+      const slice = arr.slice(0, budget);
+      budget -= slice.length;
+      return slice;
+    };
+    closingSoon = take(closingSoon);
+    upcoming = take(upcoming);
+    closed = take(closed);
+  }
   const recent = [...visible].sort(byNewest).slice(0, 3);
   const spotlight = [...closingSoon, ...upcoming][0] ?? null;
 
@@ -319,7 +337,7 @@ export default function App() {
               </Section>
             )}
 
-            {!filtering && recent.length > 0 && (
+            {!filtering && hiddenCount === 0 && recent.length > 0 && (
               <Section icon={SparkIcon} title="Recently added">
                 <Grid>{recent.map(renderCard)}</Grid>
               </Section>
@@ -339,6 +357,17 @@ export default function App() {
                   ))}
                 </ul>
               </Section>
+            )}
+
+            {hiddenCount > 0 && (
+              <button
+                onClick={() => setExploreOpen(true)}
+                className="card group mx-auto flex items-center gap-2.5 px-6 py-3.5 font-display text-[15px] font-bold tracking-tight transition duration-200 hover:-translate-y-0.5 hover:shadow-lift hover:ring-2 hover:ring-marigold/40"
+              >
+                <CompassIcon size={18} className="text-marigold-deep transition-transform duration-200 group-hover:rotate-45 dark:text-marigold" />
+                See {hiddenCount} more in Explore
+                <span aria-hidden="true" className="text-marigold-deep dark:text-marigold">→</span>
+              </button>
             )}
           </>
         )}
