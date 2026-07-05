@@ -14,9 +14,35 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-mist font-sans text-ink antialiased dark:bg-night dark:text-night-text;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    @apply font-sans text-ink antialiased dark:text-night-text;
     text-rendering: optimizeLegibility;
+    transition: color 0.25s ease;
+    background-color: #f3f5fa;
+    background-image:
+      radial-gradient(1100px 620px at 10% -10%, rgba(238, 155, 30, 0.16), transparent 60%),
+      radial-gradient(950px 560px at 90% -14%, rgba(85, 106, 240, 0.13), transparent 60%),
+      radial-gradient(850px 640px at 50% 118%, rgba(18, 165, 165, 0.09), transparent 62%);
+    background-attachment: fixed;
+  }
+  .dark body {
+    background-color: #0c101d;
+    background-image:
+      radial-gradient(1050px 620px at 12% -12%, rgba(238, 155, 30, 0.14), transparent 55%),
+      radial-gradient(950px 620px at 88% -16%, rgba(124, 108, 246, 0.17), transparent 55%),
+      radial-gradient(950px 720px at 50% 122%, rgba(18, 165, 165, 0.11), transparent 62%);
+  }
+  /* Fine film grain over the gradients, under the content. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark body::before {
+    opacity: 0.07;
   }
   ::selection {
     @apply bg-marigold/30;
@@ -44,11 +70,12 @@
 }
 
 @layer components {
+  /* Frosted-glass surface used by cards, tiles and modals. */
   .card {
-    @apply rounded-2xl border border-ink/[0.06] bg-paper shadow-card transition-colors duration-200 dark:border-night-edge dark:bg-night-card;
+    @apply rounded-2xl border border-white/60 bg-white/75 bg-clip-padding shadow-card backdrop-blur-xl transition-colors duration-200 dark:border-white/[0.07] dark:bg-night-card/75;
   }
   .field {
-    @apply w-full min-h-[44px] rounded-xl border border-ink/10 bg-mist/60 px-3.5 py-2.5 text-[15px] text-ink shadow-[inset_0_1px_2px_rgba(20,26,45,.03)] placeholder:text-ink-faint transition duration-150 hover:border-ink/20 focus:border-marigold focus:bg-paper focus:shadow-none dark:border-night-edge dark:bg-night/70 dark:text-night-text dark:shadow-none dark:placeholder:text-night-soft/60 dark:hover:border-night-soft/40 dark:focus:border-marigold dark:focus:bg-night-card;
+    @apply w-full min-h-[44px] rounded-xl border border-ink/10 bg-white/70 px-3.5 py-2.5 text-[15px] text-ink shadow-[inset_0_1px_2px_rgba(20,26,45,.03)] placeholder:text-ink-faint transition duration-150 hover:border-ink/20 focus:border-marigold focus:bg-paper focus:shadow-none dark:border-night-edge dark:bg-night/70 dark:text-night-text dark:shadow-none dark:placeholder:text-night-soft/60 dark:hover:border-night-soft/40 dark:focus:border-marigold dark:focus:bg-night-card;
   }
   /* select with a custom chevron so it looks intentional in both themes */
   .field-select {
@@ -64,13 +91,25 @@
     @apply inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-150 active:scale-[.97];
   }
   .btn-primary {
-    @apply btn bg-gradient-to-b from-marigold to-marigold-deep text-white shadow-[0_1px_0_rgba(255,255,255,.25)_inset,0_6px_16px_-6px_rgba(199,124,8,.55)] hover:brightness-[1.06] active:brightness-95;
+    @apply btn relative overflow-hidden bg-gradient-to-b from-marigold to-marigold-deep text-white shadow-[0_1px_0_rgba(255,255,255,.25)_inset,0_6px_16px_-6px_rgba(199,124,8,.55)] hover:shadow-[0_1px_0_rgba(255,255,255,.25)_inset,0_8px_22px_-6px_rgba(199,124,8,.7)] active:brightness-95;
+  }
+  /* light sweep across the primary button on hover */
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.35) 50%, transparent 60%);
+    transform: translateX(-130%);
+    transition: transform 0.55s ease;
+  }
+  .btn-primary:hover::after {
+    transform: translateX(130%);
   }
   .btn-ghost {
     @apply btn text-ink-soft hover:bg-ink/[0.06] hover:text-ink dark:text-night-soft dark:hover:bg-white/[0.07] dark:hover:text-night-text;
   }
   .btn-quiet {
-    @apply btn border border-ink/10 bg-paper text-ink shadow-[0_1px_2px_rgba(20,26,45,.04)] hover:border-ink/25 dark:border-night-edge dark:bg-night-card dark:text-night-text dark:shadow-none dark:hover:border-night-soft/50;
+    @apply btn border border-ink/10 bg-white/70 text-ink shadow-[0_1px_2px_rgba(20,26,45,.04)] backdrop-blur hover:border-ink/25 dark:border-night-edge dark:bg-night-card/80 dark:text-night-text dark:shadow-none dark:hover:border-night-soft/50;
   }
   .chip {
     @apply inline-flex min-h-[38px] shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold transition duration-150;
@@ -80,6 +119,104 @@
   }
   .eyebrow {
     @apply text-[11.5px] font-semibold uppercase tracking-[0.12em] text-ink-faint dark:text-night-soft/70;
+  }
+  /* Gradient wordmark — the brand signature. */
+  .wordmark {
+    @apply bg-gradient-to-r from-marigold-deep via-marigold to-[#F07A3B] bg-clip-text font-display font-bold tracking-tight text-transparent;
+  }
+}
+
+/* ————— Signature flourishes ————— */
+
+/* Hairline rainbow edge under the glass header */
+.glass-header {
+  position: relative;
+}
+.glass-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(238, 155, 30, 0.55) 25%,
+    rgba(124, 108, 246, 0.45) 65%,
+    transparent
+  );
+}
+
+/* Drifting colour fields inside the Spotlight hero */
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+}
+.aurora-a {
+  width: 21rem;
+  height: 21rem;
+  right: -6rem;
+  top: -9rem;
+  background: #ee9b1e;
+  opacity: 0.34;
+  animation: drift 16s ease-in-out infinite;
+}
+.aurora-b {
+  width: 24rem;
+  height: 24rem;
+  left: -8rem;
+  bottom: -11rem;
+  background: #556af0;
+  opacity: 0.32;
+  animation: drift 21s ease-in-out infinite reverse;
+}
+.aurora-c {
+  width: 16rem;
+  height: 16rem;
+  left: 38%;
+  top: -8rem;
+  background: #12a5a5;
+  opacity: 0.22;
+  animation: drift 26s ease-in-out infinite;
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(42px, 26px) scale(1.12);
+  }
+  66% {
+    transform: translate(-30px, 10px) scale(0.94);
+  }
+}
+
+/* Faint dot matrix over the hero, fading out from the countdown corner */
+.dotgrid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1.4px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(640px 340px at 78% 18%, black, transparent 72%);
+  mask-image: radial-gradient(640px 340px at 78% 18%, black, transparent 72%);
+}
+
+/* Gentle hover for the empty-state trophy */
+.floaty {
+  animation: floaty 5s ease-in-out infinite;
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
   }
 }
 

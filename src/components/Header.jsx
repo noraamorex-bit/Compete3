@@ -24,15 +24,13 @@ export default function Header({
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-ink/5 bg-mist/80 backdrop-blur-xl dark:border-night-edge dark:bg-night/80">
+    <header className="glass-header sticky top-0 z-30 bg-white/55 backdrop-blur-2xl dark:bg-night/60">
       <div className="mx-auto flex max-w-6xl items-center gap-2.5 px-4 py-3 sm:gap-3 sm:px-6">
-        <a href="#" className="flex items-center gap-2.5" aria-label="Compete home">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-marigold to-marigold-deep text-white shadow-[0_6px_14px_-6px_rgba(199,124,8,.6)] transition-transform duration-200 hover:scale-105">
+        <a href="#" className="group flex items-center gap-2.5" aria-label="Compete home">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-marigold to-marigold-deep text-white shadow-[0_6px_14px_-6px_rgba(199,124,8,.6)] transition-transform duration-200 group-hover:-rotate-6 group-hover:scale-105">
             <TrophyIcon size={18} />
           </span>
-          <span className="hidden font-display text-xl font-bold tracking-tight sm:block">
-            Compete
-          </span>
+          <span className="wordmark hidden text-xl sm:block">Compete</span>
         </a>
 
         <label className="relative ml-auto w-full max-w-xs flex-1 sm:max-w-sm">

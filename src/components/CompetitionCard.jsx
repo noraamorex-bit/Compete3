@@ -17,7 +17,7 @@ function CompetitionCard({ competition: c, onOpen, onEdit, onDelete, onToggleFav
 
   return (
     <article
-      className={`card group relative flex flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lift ${
+      className={`card group relative flex flex-col overflow-hidden ring-1 ring-transparent transition duration-200 hover:-translate-y-1 hover:shadow-lift hover:ring-marigold/25 ${
         past ? "opacity-60 saturate-50" : ""
       } animate-rise`}
       style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}

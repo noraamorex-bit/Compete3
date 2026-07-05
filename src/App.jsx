@@ -41,6 +41,10 @@ function Section({ icon: Icon, title, hint, children }) {
         </span>
         <h2 className="font-display text-xl font-bold tracking-tight">{title}</h2>
         {hint && <span className="eyebrow translate-y-[-1px]">{hint}</span>}
+        <span
+          className="ml-2 hidden h-px flex-1 self-center bg-gradient-to-r from-ink/15 to-transparent dark:from-white/15 sm:block"
+          aria-hidden="true"
+        />
       </div>
       {children}
     </section>
@@ -279,9 +283,7 @@ export default function App() {
       </main>
 
       <footer className="safe-bottom mx-auto max-w-6xl px-4 pt-16 text-center sm:px-6">
-        <p className="font-display text-[15px] font-bold tracking-tight text-ink-faint dark:text-night-soft/70">
-          Compete
-        </p>
+        <p className="wordmark text-[16px]">Compete</p>
         <p className="mt-1 text-[12.5px] text-ink-faint/80 dark:text-night-soft/50">
           Your deadlines, all in one place · data stays on this device
         </p>
