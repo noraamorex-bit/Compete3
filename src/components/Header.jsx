@@ -33,7 +33,7 @@ export default function Header({
           <span className="wordmark hidden text-xl sm:block">Compete</span>
         </a>
 
-        <label className="relative ml-auto w-full max-w-xs flex-1 sm:max-w-sm">
+        <label className="relative ml-auto min-w-0 max-w-xs flex-1 sm:max-w-sm">
           <SearchIcon
             size={17}
             className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint dark:text-night-soft"

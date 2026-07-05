@@ -8,9 +8,12 @@ import {
   RepeatIcon, StarIcon, TrashIcon, TrophyIcon,
 } from "./Icons.jsx";
 
-const Row = ({ icon: Icon, label, children }) => (
-  <div className="flex items-start gap-3 py-3">
-    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-mist text-ink-soft dark:bg-night/70 dark:text-night-soft">
+const Row = ({ icon: Icon, label, tint, children }) => (
+  <div className="flex items-start gap-3 py-3.5">
+    <span
+      className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-mist text-ink-soft ring-1 ring-black/[0.04] dark:bg-night/70 dark:text-night-soft dark:ring-white/10"
+      style={tint ? { background: `${tint}1a`, color: tint } : undefined}
+    >
       <Icon size={16} />
     </span>
     <div className="min-w-0">
@@ -42,6 +45,12 @@ export default function CompetitionDetails({
 
   return (
     <Modal title="Details" onClose={onClose} wide>
+      {/* category accent hairline */}
+      <div
+        className="-mx-6 -mt-5 mb-5 h-[3px]"
+        style={{ background: `linear-gradient(90deg, ${cat.dot}, ${cat.dot}33, transparent)` }}
+        aria-hidden="true"
+      />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <span
@@ -73,7 +82,7 @@ export default function CompetitionDetails({
       </div>
 
       <div className="mt-5 divide-y divide-ink/5 dark:divide-night-edge">
-        <Row icon={CalendarIcon} label="Deadline">
+        <Row icon={CalendarIcon} label="Deadline" tint={cat.dot}>
           <div className="flex flex-wrap items-center gap-2">
             <span className={past ? "text-ink-faint line-through dark:text-night-soft/70" : ""}>
               {formatDeadline(c.deadline)}

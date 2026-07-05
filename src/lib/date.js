@@ -32,6 +32,19 @@ export function formatCountdown(deadline, now = Date.now()) {
   return `${m}m ${pad(s)}s`;
 }
 
+/** Countdown split into units for segmented displays. */
+export function countdownParts(deadline, now = Date.now()) {
+  let ms = Math.max(0, timeLeft(deadline, now));
+  const past = timeLeft(deadline, now) <= 0;
+  const d = Math.floor(ms / DAY);
+  ms -= d * DAY;
+  const h = Math.floor(ms / HOUR);
+  ms -= h * HOUR;
+  const m = Math.floor(ms / MIN);
+  const s = Math.floor((ms - m * MIN) / 1000);
+  return { d, h, m, s, past };
+}
+
 /** "3 days left" style phrase for cards. */
 export function relativePhrase(deadline, now = Date.now()) {
   const ms = timeLeft(deadline, now);

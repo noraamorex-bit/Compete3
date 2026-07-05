@@ -75,7 +75,7 @@
     @apply rounded-2xl border border-white/60 bg-white/75 bg-clip-padding shadow-card backdrop-blur-xl transition-colors duration-200 dark:border-white/[0.07] dark:bg-night-card/75;
   }
   .field {
-    @apply w-full min-h-[44px] rounded-xl border border-ink/10 bg-white/70 px-3.5 py-2.5 text-[15px] text-ink shadow-[inset_0_1px_2px_rgba(20,26,45,.03)] placeholder:text-ink-faint transition duration-150 hover:border-ink/20 focus:border-marigold focus:bg-paper focus:shadow-none dark:border-night-edge dark:bg-night/70 dark:text-night-text dark:shadow-none dark:placeholder:text-night-soft/60 dark:hover:border-night-soft/40 dark:focus:border-marigold dark:focus:bg-night-card;
+    @apply w-full min-h-[44px] rounded-xl border border-ink/10 bg-white/70 px-3.5 py-2.5 text-[15px] text-ink shadow-[inset_0_1px_2px_rgba(20,26,45,.03)] placeholder:text-ink-faint transition duration-150 hover:border-ink/20 focus:border-marigold focus:bg-paper focus:shadow-[0_0_0_4px_rgba(238,155,30,.12)] dark:border-night-edge dark:bg-night/70 dark:text-night-text dark:shadow-none dark:placeholder:text-night-soft/60 dark:hover:border-night-soft/40 dark:focus:border-marigold dark:focus:bg-night-card dark:focus:shadow-[0_0_0_4px_rgba(238,155,30,.15)];
   }
   /* select with a custom chevron so it looks intentional in both themes */
   .field-select {
@@ -112,7 +112,7 @@
     @apply btn border border-ink/10 bg-white/70 text-ink shadow-[0_1px_2px_rgba(20,26,45,.04)] backdrop-blur hover:border-ink/25 dark:border-night-edge dark:bg-night-card/80 dark:text-night-text dark:shadow-none dark:hover:border-night-soft/50;
   }
   .chip {
-    @apply inline-flex min-h-[38px] shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold transition duration-150;
+    @apply inline-flex min-h-[38px] shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold transition duration-150 hover:-translate-y-px;
   }
   .icon-btn {
     @apply grid h-9 w-9 place-items-center rounded-xl text-ink-faint transition duration-150 hover:bg-ink/[0.06] hover:text-ink active:scale-90 dark:text-night-soft dark:hover:bg-white/[0.08] dark:hover:text-night-text;

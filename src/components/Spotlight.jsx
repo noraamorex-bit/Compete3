@@ -1,7 +1,26 @@
 import { useNow } from "../hooks/useNow.js";
-import { formatCountdown, formatDeadline } from "../lib/date.js";
+import { countdownParts, formatDeadline } from "../lib/date.js";
 import { categoryById } from "../lib/constants.js";
 import { ClockIcon } from "./Icons.jsx";
+
+const pad = (n) => String(n).padStart(2, "0");
+
+/** One labelled unit of the hero countdown. */
+function Segment({ value, label }) {
+  return (
+    <div className="min-w-[64px] rounded-2xl bg-white/[0.08] px-2.5 pb-2 pt-2.5 text-center ring-1 ring-white/15 backdrop-blur-sm sm:min-w-[72px]">
+      <span
+        className="block bg-gradient-to-br from-[#FFE3B0] via-marigold to-[#F07A3B] bg-clip-text font-mono text-[28px] font-semibold leading-none text-transparent sm:text-[32px]"
+        style={{ fontVariantNumeric: "tabular-nums" }}
+      >
+        {pad(value)}
+      </span>
+      <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 /**
  * The hero: the single next deadline, front and centre, with a live
@@ -12,6 +31,10 @@ export default function Spotlight({ competition, onOpen }) {
   const now = useNow(1000);
   if (!competition) return null;
   const cat = categoryById(competition.category);
+  const { d, h, m, s, past } = countdownParts(competition.deadline, now);
+  const segments = d > 0
+    ? [[d, "days"], [h, "hours"], [m, "min"]]
+    : [[h, "hours"], [m, "min"], [s, "sec"]];
 
   return (
     <section className="animate-rise">
@@ -28,7 +51,7 @@ export default function Spotlight({ competition, onOpen }) {
               <p className="mb-3.5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/85 ring-1 ring-white/15 backdrop-blur">
                 <ClockIcon size={14} className="text-marigold" /> Next deadline
               </p>
-              <h2 className="truncate font-display text-[clamp(26px,4.5vw,38px)] font-bold leading-[1.08] tracking-tight underline-offset-4 transition group-hover:underline">
+              <h2 className="line-clamp-2 font-display text-[clamp(26px,4.5vw,38px)] font-bold leading-[1.08] tracking-tight underline-offset-4 transition group-hover:underline sm:line-clamp-1">
                 {competition.title}
               </h2>
               <p className="mt-2 flex flex-wrap items-center gap-x-2 text-[15px] text-white/70">
@@ -45,12 +68,17 @@ export default function Spotlight({ competition, onOpen }) {
             </button>
 
             <div className="shrink-0 sm:text-right">
-              <p
-                className="bg-gradient-to-br from-[#FFE3B0] via-marigold to-[#F07A3B] bg-clip-text font-mono text-[clamp(34px,6vw,46px)] font-semibold leading-none tracking-tight text-transparent"
-                style={{ fontVariantNumeric: "tabular-nums" }}
-              >
-                {formatCountdown(competition.deadline, now)}
-              </p>
+              {past ? (
+                <p className="font-mono text-[32px] font-semibold leading-none text-white/50">
+                  Closed
+                </p>
+              ) : (
+                <div className="flex gap-2 sm:justify-end">
+                  {segments.map(([value, label]) => (
+                    <Segment key={label} value={value} label={label} />
+                  ))}
+                </div>
+              )}
               <p className="mt-2.5 text-[13px] text-white/60">
                 Closes {formatDeadline(competition.deadline)}
               </p>

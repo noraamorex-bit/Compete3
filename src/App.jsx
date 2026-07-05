@@ -10,7 +10,7 @@ import EmptyState from "./components/EmptyState.jsx";
 import { useCompetitions } from "./hooks/useCompetitions.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
-import { isClosingSoon, isPast, timeLeft } from "./lib/date.js";
+import { isClosingSoon, isPast, relativePhrase, timeLeft } from "./lib/date.js";
 import { exportJSON, parseImport } from "./lib/transfer.js";
 import { CLOSING_SOON_DAYS } from "./lib/constants.js";
 import { CalendarIcon, ClockIcon, SparkIcon, StarIcon, TrophyIcon } from "./components/Icons.jsx";
@@ -55,28 +55,35 @@ const Grid = ({ children }) => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
 );
 
-function Stat({ icon: Icon, value, label, accent, active, onClick }) {
+function Stat({ icon: Icon, value, label, hint, accent, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`card flex items-center gap-3 px-4 py-3 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-lift active:scale-[.98] ${
+      className={`card group flex flex-col items-start gap-2 px-4 py-3.5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-lift active:scale-[.98] sm:flex-row sm:items-center sm:gap-3 ${
         active ? "ring-2 ring-marigold" : ""
       }`}
       aria-pressed={active}
     >
-      <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${accent}`}>
-        <Icon size={17} />
+      <span
+        className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-black/[0.04] transition-transform duration-200 group-hover:scale-110 dark:ring-white/10 sm:h-10 sm:w-10 ${accent}`}
+      >
+        <Icon size={18} />
       </span>
       <span className="min-w-0">
         <span
-          className="block font-display text-xl font-bold leading-none tracking-tight"
+          className="block font-display text-[22px] font-bold leading-none tracking-tight"
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
           {value}
         </span>
-        <span className="mt-1 block truncate text-[12.5px] font-medium text-ink-soft dark:text-night-soft">
+        <span className="mt-1 block text-[12px] font-medium leading-tight text-ink-soft dark:text-night-soft sm:truncate sm:text-[12.5px]">
           {label}
         </span>
+        {hint && (
+          <span className="mt-0.5 hidden truncate text-[11px] text-ink-faint dark:text-night-soft/60 sm:block">
+            {hint}
+          </span>
+        )}
       </span>
     </button>
   );
@@ -95,12 +102,12 @@ export default function App() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [sort, setSort] = useState("deadline");
 
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(null); // { msg, action?: { label, run } }
   const toastTimer = useRef(null);
-  const notify = useCallback((msg) => {
-    setToast(msg);
+  const notify = useCallback((msg, action = null) => {
+    setToast({ msg, action });
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 3200);
+    toastTimer.current = setTimeout(() => setToast(null), action ? 5500 : 3200);
   }, []);
 
   const filtering =
@@ -125,14 +132,19 @@ export default function App() {
     return map;
   }, [competitions]);
 
-  const stats = useMemo(
-    () => ({
+  const stats = useMemo(() => {
+    const open = competitions.filter((c) => !isPast(c.deadline, now));
+    const nextUp = [...open].sort(byDeadline)[0];
+    return {
       total: competitions.length,
+      totalHint: `${Object.keys(
+        open.reduce((acc, c) => ((acc[c.category] = 1), acc), {})
+      ).length} active categories`,
       soon: competitions.filter((c) => isClosingSoon(c.deadline, CLOSING_SOON_DAYS, now)).length,
+      soonHint: nextUp ? `next: ${relativePhrase(nextUp.deadline, now)}` : "all caught up",
       favorites: competitions.filter((c) => c.favorite).length,
-    }),
-    [competitions, now]
-  );
+    };
+  }, [competitions, now]);
 
   const sorter = SORTERS[sort] ?? byDeadline;
   const closingSoon = visible
@@ -165,9 +177,11 @@ export default function App() {
   };
 
   const handleDelete = () => {
-    remove(deleteTarget.id);
+    const item = deleteTarget;
+    remove(item.id);
     setDeleteTarget(null);
     setDetailsId(null);
+    notify(`Deleted “${item.title}”`, { label: "Undo", run: () => importAll([item]) });
   };
 
   const clearFilters = () => {
@@ -226,6 +240,7 @@ export default function App() {
               icon={TrophyIcon}
               value={stats.total}
               label="Tracked"
+              hint={stats.totalHint}
               accent="bg-ink/5 text-ink-soft dark:bg-white/5 dark:text-night-soft"
               active={false}
               onClick={clearFilters}
@@ -234,6 +249,7 @@ export default function App() {
               icon={ClockIcon}
               value={stats.soon}
               label="Closing soon"
+              hint={stats.soonHint}
               accent="bg-ember/10 text-ember"
               active={filters.closingSoon}
               onClick={() => setFilters((f) => ({ ...f, closingSoon: !f.closingSoon }))}
@@ -242,6 +258,7 @@ export default function App() {
               icon={StarIcon}
               value={stats.favorites}
               label="Favorites"
+              hint={stats.favorites ? "your starred picks" : "tap ☆ on a card"}
               accent="bg-marigold/15 text-marigold-deep dark:text-marigold"
               active={filters.favoritesOnly}
               onClick={() => setFilters((f) => ({ ...f, favoritesOnly: !f.favoritesOnly }))}
@@ -310,9 +327,23 @@ export default function App() {
       {toast && (
         <div
           role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-pop rounded-full bg-ink px-4 py-2 text-[13.5px] font-semibold text-white shadow-lift dark:bg-night-text dark:text-night"
+          className={`fixed bottom-6 left-1/2 z-50 flex max-w-[92vw] -translate-x-1/2 items-center gap-3 animate-pop rounded-full bg-ink py-2 pl-4 text-[13.5px] font-semibold text-white shadow-lift dark:bg-night-text dark:text-night ${
+            toast.action ? "pr-2" : "pr-4"
+          }`}
         >
-          {toast}
+          <span className="truncate">{toast.msg}</span>
+          {toast.action && (
+            <button
+              onClick={() => {
+                clearTimeout(toastTimer.current);
+                toast.action.run();
+                setToast(null);
+              }}
+              className="shrink-0 rounded-full bg-white/15 px-3 py-1 font-bold text-marigold transition hover:bg-white/25 dark:bg-night/10 dark:text-marigold-deep dark:hover:bg-night/20"
+            >
+              {toast.action.label}
+            </button>
+          )}
         </div>
       )}
 

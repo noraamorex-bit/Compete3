@@ -18,7 +18,7 @@ export default function Countdown({ deadline, className = "" }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-lg px-2 py-1 font-mono text-[12.5px] font-medium ${
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-mono text-[12.5px] font-semibold ${
         past
           ? "bg-ink/5 text-ink-faint dark:bg-white/5 dark:text-night-soft/70"
           : soon
@@ -27,6 +27,9 @@ export default function Countdown({ deadline, className = "" }) {
       } ${className}`}
       style={{ fontVariantNumeric: "tabular-nums" }}
     >
+      {soon && !past && (
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ember" aria-hidden="true" />
+      )}
       {formatCountdown(deadline, now)}
     </span>
   );

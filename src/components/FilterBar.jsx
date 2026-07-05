@@ -23,20 +23,34 @@ export default function FilterBar({ filters, onChange, counts, sort, onSort }) {
       <button onClick={() => set({ category: null })} className={category ? base : solid}>
         All
       </button>
-      {CATEGORIES.map((c) =>
-        counts[c.id] ? (
+      {CATEGORIES.map((c) => {
+        if (!counts[c.id]) return null;
+        const on = category === c.id;
+        return (
           <button
             key={c.id}
-            onClick={() => set({ category: category === c.id ? null : c.id })}
-            className={category === c.id ? solid : base}
-            aria-pressed={category === c.id}
+            onClick={() => set({ category: on ? null : c.id })}
+            className={on ? "chip select-none font-bold active:scale-95" : base}
+            style={
+              on
+                ? {
+                    background: `${c.dot}1f`,
+                    color: c.dot,
+                    boxShadow: `inset 0 0 0 1.5px ${c.dot}80`,
+                  }
+                : undefined
+            }
+            aria-pressed={on}
           >
-            <span className="h-2 w-2 rounded-full" style={{ background: c.dot }} />
+            <span
+              className={`h-2 w-2 rounded-full ${on ? "shadow-[0_0_8px_currentColor]" : ""}`}
+              style={{ background: c.dot }}
+            />
             {c.label}
             <span className="opacity-60">{counts[c.id]}</span>
           </button>
-        ) : null
-      )}
+        );
+      })}
 
       <span className="mx-1 h-5 w-px shrink-0 bg-ink/10 dark:bg-night-edge" aria-hidden="true" />
 
