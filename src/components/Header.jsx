@@ -38,7 +38,7 @@ export default function Header({
           <span className="wordmark hidden text-xl sm:block">Compete</span>
         </button>
 
-        <label className="relative ml-auto min-w-0 max-w-xs flex-1 sm:max-w-sm">
+        <label className="relative ml-auto min-w-0 max-w-xs flex-1 transition-[max-width] duration-300 ease-out sm:max-w-sm sm:focus-within:max-w-md">
           <SearchIcon
             size={17}
             className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint dark:text-night-soft"
@@ -116,7 +116,9 @@ export default function Header({
           className="icon-btn !h-10 !w-10"
           aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          {dark ? <SunIcon size={19} /> : <MoonIcon size={19} />}
+          <span key={dark ? "sun" : "moon"} className="animate-themeflip grid">
+            {dark ? <SunIcon size={19} /> : <MoonIcon size={19} />}
+          </span>
         </button>
 
         <button onClick={onAdd} className="btn-primary !px-3.5 sm:!px-4">

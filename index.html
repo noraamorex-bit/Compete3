@@ -26,7 +26,43 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Skeleton shown for the instant before React mounts; replaced on render. -->
+      <style>
+        .sk-wrap { max-width: 72rem; margin: 0 auto; padding: 20px 16px; }
+        .sk {
+          position: relative; overflow: hidden;
+          border-radius: 16px; background: rgba(120, 130, 160, 0.13);
+        }
+        .dark .sk { background: rgba(255, 255, 255, 0.055); }
+        .sk::after {
+          content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+          animation: sk 1.3s ease-in-out infinite;
+        }
+        .dark .sk::after {
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+        }
+        @keyframes sk { to { transform: translateX(100%); } }
+        .sk-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+        @media (max-width: 640px) { .sk-cards { grid-template-columns: 1fr; } }
+      </style>
+      <div class="sk-wrap" aria-hidden="true">
+        <div class="sk" style="height: 52px; border-radius: 18px"></div>
+        <div class="sk" style="height: 216px; margin-top: 22px; border-radius: 30px"></div>
+        <div class="sk-row">
+          <div class="sk" style="height: 88px"></div>
+          <div class="sk" style="height: 88px"></div>
+          <div class="sk" style="height: 88px"></div>
+        </div>
+        <div class="sk" style="height: 38px; margin-top: 18px; border-radius: 999px"></div>
+        <div class="sk-row sk-cards">
+          <div class="sk" style="height: 224px"></div>
+          <div class="sk" style="height: 224px"></div>
+          <div class="sk" style="height: 224px"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

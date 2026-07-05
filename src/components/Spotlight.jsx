@@ -9,11 +9,14 @@ const pad = (n) => String(n).padStart(2, "0");
 function Segment({ value, label }) {
   return (
     <div className="min-w-[64px] rounded-2xl bg-white/[0.08] px-2.5 pb-2 pt-2.5 text-center ring-1 ring-white/15 backdrop-blur-sm sm:min-w-[72px]">
-      <span
-        className="block bg-gradient-to-br from-[#FFE3B0] via-marigold to-[#F07A3B] bg-clip-text font-mono text-[28px] font-semibold leading-none text-transparent sm:text-[32px]"
-        style={{ fontVariantNumeric: "tabular-nums" }}
-      >
-        {pad(value)}
+      <span className="block overflow-hidden">
+        <span
+          key={value}
+          className="animate-tick block bg-gradient-to-br from-[#FFE3B0] via-marigold to-[#F07A3B] bg-clip-text font-mono text-[28px] font-semibold leading-none text-transparent sm:text-[32px]"
+          style={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {pad(value)}
+        </span>
       </span>
       <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/50">
         {label}
@@ -45,6 +48,10 @@ export default function Spotlight({ competition, onOpen }) {
           <div className="aurora aurora-b" aria-hidden="true" />
           <div className="aurora aurora-c" aria-hidden="true" />
           <div className="dotgrid" aria-hidden="true" />
+          <div className="sheen" aria-hidden="true" />
+          <span className="spark" style={{ left: "16%", top: "24%" }} aria-hidden="true" />
+          <span className="spark" style={{ left: "58%", top: "72%", animationDelay: "1.7s" }} aria-hidden="true" />
+          <span className="spark" style={{ left: "84%", top: "30%", animationDelay: "3.4s" }} aria-hidden="true" />
 
           <div className="relative flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
             <button onClick={() => onOpen(competition)} className="min-w-0 text-left">

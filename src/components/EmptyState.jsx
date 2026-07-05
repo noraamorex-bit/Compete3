@@ -5,6 +5,9 @@ export default function EmptyState({ filtered, onAdd, onClear, onExplore }) {
     <div className="card flex flex-col items-center px-6 py-16 text-center animate-rise">
       <span className="floaty relative grid h-16 w-16 place-items-center rounded-2xl bg-mist text-ink-faint ring-1 ring-ink/5 dark:bg-night/70 dark:text-night-soft dark:ring-night-edge">
         <span className="pointer-events-none absolute -inset-4 -z-10 rounded-full bg-marigold/10 blur-2xl" aria-hidden="true" />
+        <span className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-marigold/25 animate-ring-slow" aria-hidden="true" />
+        <span className="spark" style={{ left: "-14px", top: "10%" }} aria-hidden="true" />
+        <span className="spark" style={{ right: "-16px", top: "60%", animationDelay: "2.2s" }} aria-hidden="true" />
         <InboxIcon size={28} />
       </span>
       <h3 className="mt-4 font-display text-xl font-bold tracking-tight">

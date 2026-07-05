@@ -12,6 +12,7 @@ import { CATALOG } from "./data/catalog.js";
 import { useCompetitions } from "./hooks/useCompetitions.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
+import { useReveal } from "./hooks/useReveal.js";
 import { isClosingSoon, isPast, relativePhrase, timeLeft } from "./lib/date.js";
 import { exportJSON, parseImport } from "./lib/transfer.js";
 import { CLOSING_SOON_DAYS } from "./lib/constants.js";
@@ -36,8 +37,9 @@ function matchesQuery(c, words) {
 }
 
 function Section({ icon: Icon, title, hint, children }) {
+  const [ref, shown] = useReveal();
   return (
-    <section className="animate-rise">
+    <section ref={ref} className={`reveal ${shown ? "reveal-in" : ""}`}>
       <div className="mb-3.5 flex items-baseline gap-2.5">
         <span className="grid h-7 w-7 translate-y-1 place-items-center rounded-lg bg-ink/5 text-ink-soft dark:bg-white/5 dark:text-night-soft">
           <Icon size={15} />
