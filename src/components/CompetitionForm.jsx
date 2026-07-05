@@ -14,6 +14,7 @@ const empty = {
   location: "",
   prize: "",
   notes: "",
+  repeatsYearly: false,
 };
 
 export default function CompetitionForm({ initial, onSave, onClose }) {
@@ -81,6 +82,15 @@ export default function CompetitionForm({ initial, onSave, onClose }) {
           <input id="f-deadline" type="datetime-local" className="field"
             value={form.deadline} onChange={set("deadline")} />
           {err("deadline")}
+          <label className="mt-2 flex cursor-pointer items-center gap-2 text-[13.5px] font-medium text-ink-soft dark:text-night-soft">
+            <input
+              type="checkbox"
+              checked={Boolean(form.repeatsYearly)}
+              onChange={(e) => setForm((f) => ({ ...f, repeatsYearly: e.target.checked }))}
+              className="h-4 w-4 accent-marigold"
+            />
+            Repeats yearly — roll to next edition after the deadline
+          </label>
         </div>
 
         <div>

@@ -1,8 +1,14 @@
 import { useEffect, useRef } from "react";
-import { CloseIcon, MoonIcon, PlusIcon, SearchIcon, SunIcon, TrophyIcon } from "./Icons.jsx";
+import {
+  CloseIcon, DownloadIcon, MoonIcon, PlusIcon, SearchIcon, SunIcon,
+  TrophyIcon, UploadIcon,
+} from "./Icons.jsx";
 
-export default function Header({ query, onQuery, dark, onToggleTheme, onAdd }) {
+export default function Header({
+  query, onQuery, dark, onToggleTheme, onAdd, onExport, onImportFile,
+}) {
   const inputRef = useRef(null);
+  const fileRef = useRef(null);
 
   // "/" focuses search from anywhere; Escape clears and leaves it.
   useEffect(() => {
@@ -63,6 +69,35 @@ export default function Header({ query, onQuery, dark, onToggleTheme, onAdd }) {
             </kbd>
           )}
         </label>
+
+        <button
+          onClick={onExport}
+          className="icon-btn hidden !h-10 !w-10 sm:grid"
+          aria-label="Export backup"
+          title="Export backup (JSON)"
+        >
+          <DownloadIcon size={18} />
+        </button>
+
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="icon-btn hidden !h-10 !w-10 sm:grid"
+          aria-label="Import backup"
+          title="Import backup (JSON)"
+        >
+          <UploadIcon size={18} />
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onImportFile(file);
+            e.target.value = ""; // allow re-importing the same file
+          }}
+        />
 
         <button
           onClick={onToggleTheme}

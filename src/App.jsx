@@ -1,4 +1,4 @@
-import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 import Header from "./components/Header.jsx";
 import Spotlight from "./components/Spotlight.jsx";
 import FilterBar from "./components/FilterBar.jsx";
@@ -11,11 +11,14 @@ import { useCompetitions } from "./hooks/useCompetitions.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
 import { isClosingSoon, isPast, timeLeft } from "./lib/date.js";
+import { exportJSON, parseImport } from "./lib/transfer.js";
 import { CLOSING_SOON_DAYS } from "./lib/constants.js";
 import { CalendarIcon, ClockIcon, SparkIcon, StarIcon, TrophyIcon } from "./components/Icons.jsx";
 
 const byDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
 const byNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
+const byName = (a, b) => a.title.localeCompare(b.title);
+const SORTERS = { deadline: byDeadline, name: byName, added: byNewest };
 
 const NO_FILTERS = { category: null, favoritesOnly: false, mode: null, closingSoon: false };
 
@@ -76,7 +79,7 @@ function Stat({ icon: Icon, value, label, accent, active, onClick }) {
 }
 
 export default function App() {
-  const { competitions, add, update, remove, toggleFavorite } = useCompetitions();
+  const { competitions, add, update, remove, toggleFavorite, importAll } = useCompetitions();
   const { dark, toggle } = useTheme();
   const now = useNow(30000); // coarse clock — only section grouping needs it
 
@@ -86,6 +89,15 @@ export default function App() {
   const [detailsId, setDetailsId] = useState(null);
   const [formTarget, setFormTarget] = useState(null); // null | "new" | competition
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [sort, setSort] = useState("deadline");
+
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  const notify = useCallback((msg) => {
+    setToast(msg);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 3200);
+  }, []);
 
   const filtering =
     Boolean(deferredQuery.trim()) || JSON.stringify(filters) !== JSON.stringify(NO_FILTERS);
@@ -118,13 +130,15 @@ export default function App() {
     [competitions, now]
   );
 
+  const sorter = SORTERS[sort] ?? byDeadline;
   const closingSoon = visible
     .filter((c) => isClosingSoon(c.deadline, CLOSING_SOON_DAYS, now))
-    .sort(byDeadline);
+    .sort(sorter);
   const upcoming = visible
     .filter((c) => timeLeft(c.deadline, now) > CLOSING_SOON_DAYS * 864e5)
-    .sort(byDeadline);
-  const closed = visible.filter((c) => isPast(c.deadline, now)).sort(byDeadline).reverse();
+    .sort(sorter);
+  const closed = visible.filter((c) => isPast(c.deadline, now)).sort(sorter);
+  if (sort === "deadline") closed.reverse(); // most recently closed first
   const recent = [...visible].sort(byNewest).slice(0, 3);
   const spotlight = [...closingSoon, ...upcoming][0] ?? null;
 
@@ -157,6 +171,21 @@ export default function App() {
     setFilters(NO_FILTERS);
   };
 
+  const handleExport = () => {
+    exportJSON(competitions);
+    notify(`Exported ${competitions.length} competition${competitions.length === 1 ? "" : "s"}`);
+  };
+
+  const handleImportFile = async (file) => {
+    try {
+      const items = await parseImport(file);
+      importAll(items);
+      notify(`Imported ${items.length} competition${items.length === 1 ? "" : "s"}`);
+    } catch {
+      notify("Couldn't read that file — expected a Compete JSON backup");
+    }
+  };
+
   let cardIndex = 0;
   const renderCard = (c) => (
     <CompetitionCard
@@ -178,6 +207,8 @@ export default function App() {
         dark={dark}
         onToggleTheme={toggle}
         onAdd={() => setFormTarget("new")}
+        onExport={handleExport}
+        onImportFile={handleImportFile}
       />
 
       <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pt-6 sm:px-6 sm:pt-8">
@@ -214,7 +245,7 @@ export default function App() {
           </div>
         )}
 
-        <FilterBar filters={filters} onChange={setFilters} counts={counts} />
+        <FilterBar filters={filters} onChange={setFilters} counts={counts} sort={sort} onSort={setSort} />
 
         {visible.length === 0 ? (
           <EmptyState filtered={filtering} onAdd={() => setFormTarget("new")} onClear={clearFilters} />
@@ -272,6 +303,15 @@ export default function App() {
           onSave={handleSave}
           onClose={() => setFormTarget(null)}
         />
+      )}
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-pop rounded-full bg-ink px-4 py-2 text-[13.5px] font-semibold text-white shadow-lift dark:bg-night-text dark:text-night"
+        >
+          {toast}
+        </div>
       )}
 
       {deleteTarget && (

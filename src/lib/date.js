@@ -65,6 +65,13 @@ export function toLocalInputValue(iso) {
   return new Date(d.getTime() - off * MIN).toISOString().slice(0, 16);
 }
 
+/** Next future occurrence of a yearly deadline (same date & time). */
+export function nextYearly(deadline, now = Date.now()) {
+  const d = new Date(deadline);
+  while (d.getTime() <= now) d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString();
+}
+
 /** Share of the added → deadline window already elapsed, 0..1. */
 export function urgency(createdAt, deadline, now = Date.now()) {
   const start = new Date(createdAt).getTime();

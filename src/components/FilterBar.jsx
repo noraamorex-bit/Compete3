@@ -7,8 +7,14 @@ const solid = "chip select-none bg-ink text-white shadow-card active:scale-95 da
 const amber =
   "chip select-none bg-marigold/15 text-marigold-deep ring-1 ring-marigold/50 active:scale-95 dark:text-marigold";
 
-/** One row of everything filterable: categories, favorites, format, closing soon. */
-export default function FilterBar({ filters, onChange, counts }) {
+export const SORTS = [
+  { id: "deadline", label: "Soonest first" },
+  { id: "name", label: "Name A–Z" },
+  { id: "added", label: "Newest added" },
+];
+
+/** One row of everything filterable: categories, favorites, format, closing soon, sort. */
+export default function FilterBar({ filters, onChange, counts, sort, onSort }) {
   const { category, favoritesOnly, mode, closingSoon } = filters;
   const set = (patch) => onChange({ ...filters, ...patch });
 
@@ -69,6 +75,22 @@ export default function FilterBar({ filters, onChange, counts }) {
         <PinIcon size={14} />
         Offline
       </button>
+
+      <span className="mx-1 h-5 w-px shrink-0 bg-ink/10 dark:bg-night-edge" aria-hidden="true" />
+
+      <label className="flex shrink-0 items-center gap-1.5 text-[13px] font-semibold text-ink-soft dark:text-night-soft">
+        Sort
+        <select
+          value={sort}
+          onChange={(e) => onSort(e.target.value)}
+          className="chip cursor-pointer appearance-none bg-paper pr-1 ring-1 ring-ink/10 hover:ring-ink/25 dark:bg-night-card dark:ring-night-edge"
+          aria-label="Sort competitions"
+        >
+          {SORTS.map((s) => (
+            <option key={s.id} value={s.id}>{s.label}</option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }

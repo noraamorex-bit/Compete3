@@ -2,9 +2,10 @@ import Modal from "./Modal.jsx";
 import Countdown from "./Countdown.jsx";
 import { categoryById } from "../lib/constants.js";
 import { formatDeadline, isPast } from "../lib/date.js";
+import { downloadICS } from "../lib/calendar.js";
 import {
   CalendarIcon, GlobeIcon, LinkIcon, PencilIcon, PinIcon,
-  StarIcon, TrashIcon, TrophyIcon,
+  RepeatIcon, StarIcon, TrashIcon, TrophyIcon,
 } from "./Icons.jsx";
 
 const Row = ({ icon: Icon, label, children }) => (
@@ -78,6 +79,11 @@ export default function CompetitionDetails({
               {formatDeadline(c.deadline)}
             </span>
             <Countdown deadline={c.deadline} />
+            {c.repeatsYearly && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2 py-0.5 text-[12px] font-semibold text-ink-soft dark:bg-white/10 dark:text-night-soft">
+                <RepeatIcon size={12} /> Yearly
+              </span>
+            )}
           </div>
         </Row>
 
@@ -117,7 +123,10 @@ export default function CompetitionDetails({
         >
           <TrashIcon size={17} /> Delete
         </button>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => downloadICS(c)} className="btn-quiet" title="Download .ics reminder">
+            <CalendarIcon size={16} /> Add to calendar
+          </button>
           <button onClick={() => onEdit(c)} className="btn-quiet">
             <PencilIcon size={16} /> Edit
           </button>

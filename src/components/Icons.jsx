@@ -93,6 +93,22 @@ export const CalendarIcon = (p) => (
   </Icon>
 );
 
+export const DownloadIcon = (p) => (
+  <Icon {...p}><path d="M12 4v10m0 0-4-4m4 4 4-4M5 19.5h14" /></Icon>
+);
+
+export const UploadIcon = (p) => (
+  <Icon {...p}><path d="M12 14V4m0 0L8 8m4-4 4 4M5 19.5h14" /></Icon>
+);
+
+export const RepeatIcon = (p) => (
+  <Icon {...p}>
+    <path d="M17 3.5 20 6.5l-3 3" />
+    <path d="M20 6.5H8a4 4 0 0 0-4 4v1M7 20.5l-3-3 3-3" />
+    <path d="M4 17.5h12a4 4 0 0 0 4-4v-1" />
+  </Icon>
+);
+
 export const InboxIcon = (p) => (
   <Icon {...p}>
     <path d="M4 13.5 6.2 6a2 2 0 0 1 1.9-1.4h7.8A2 2 0 0 1 17.8 6L20 13.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
