@@ -67,3 +67,17 @@ src/
 ## License
 
 MIT — use it, fork it, star it ⭐
+
+## Cloud sync (optional)
+
+Compete works fully offline. To sync across devices:
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In the dashboard, open **SQL Editor → New query**, paste the contents of `supabase/schema.sql`, and run it.
+3. In **Authentication → URL Configuration**, set the Site URL to your deployed app (e.g. `https://compete3.vercel.app`).
+4. Copy **Project Settings → API** values into env vars wherever the app builds:
+   - Vercel: Project → Settings → Environment Variables → add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then redeploy.
+   - GitHub Pages: repo → Settings → Secrets and variables → Actions → add the same two names as secrets.
+5. Open the app, tap the cloud icon, and sign in with a magic link.
+
+Local data is preserved and merged into the account on first sign-in.

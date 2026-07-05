@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 import {
-  CloseIcon, CompassIcon, DownloadIcon, MoonIcon, PlusIcon, SearchIcon,
-  SunIcon, TrophyIcon, UploadIcon,
+  CloseIcon, CloudIcon, CompassIcon, DownloadIcon, MoonIcon, PlusIcon,
+  SearchIcon, SunIcon, TrophyIcon, UploadIcon,
 } from "./Icons.jsx";
 
 export default function Header({
-  query, onQuery, dark, onToggleTheme, onAdd, onHome, onExplore, onExport, onImportFile,
+  query, onQuery, dark, onToggleTheme, onAdd, onHome, onExplore, onExport,
+  onImportFile, onAccount, syncStatus,
 }) {
   const inputRef = useRef(null);
   const fileRef = useRef(null);
@@ -110,6 +111,24 @@ export default function Header({
             e.target.value = ""; // allow re-importing the same file
           }}
         />
+
+        <button
+          onClick={onAccount}
+          className="icon-btn relative !h-10 !w-10"
+          aria-label="Cloud sync & account"
+          title="Cloud sync"
+        >
+          <CloudIcon size={19} />
+          {syncStatus === "synced" && (
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-leaf ring-2 ring-white dark:ring-night" aria-hidden="true" />
+          )}
+          {syncStatus === "syncing" && (
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-marigold ring-2 ring-white dark:ring-night" aria-hidden="true" />
+          )}
+          {syncStatus === "error" && (
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-ember ring-2 ring-white dark:ring-night" aria-hidden="true" />
+          )}
+        </button>
 
         <button
           onClick={onToggleTheme}

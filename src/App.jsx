@@ -8,8 +8,10 @@ import CompetitionDetails from "./components/CompetitionDetails.jsx";
 import ConfirmDialog from "./components/ConfirmDialog.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import Explore, { CatalogCard } from "./components/Explore.jsx";
+import AccountMenu from "./components/AccountMenu.jsx";
 import { CATALOG } from "./data/catalog.js";
 import { useCompetitions } from "./hooks/useCompetitions.js";
+import { useSync } from "./hooks/useSync.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
 import { useReveal } from "./hooks/useReveal.js";
@@ -95,7 +97,9 @@ function Stat({ icon: Icon, value, label, hint, accent, active, onClick }) {
 }
 
 export default function App() {
-  const { competitions, add, update, remove, toggleFavorite, importAll } = useCompetitions();
+  const { competitions, add, update, remove, toggleFavorite, importAll, replaceAll } =
+    useCompetitions();
+  const sync = useSync(competitions, replaceAll);
   const { dark, toggle } = useTheme();
   const now = useNow(30000); // coarse clock — only section grouping needs it
 
@@ -106,6 +110,7 @@ export default function App() {
   const [formTarget, setFormTarget] = useState(null); // null | "new" | competition | catalog draft
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [exploreOpen, setExploreOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [sort, setSort] = useState("deadline");
 
   const [toast, setToast] = useState(null); // { msg, action?: { label, run } }
@@ -277,6 +282,8 @@ export default function App() {
         onExplore={() => setExploreOpen(true)}
         onExport={handleExport}
         onImportFile={handleImportFile}
+        onAccount={() => setAccountOpen(true)}
+        syncStatus={sync.user ? sync.status : null}
       />
 
       <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pt-6 sm:px-6 sm:pt-8">
@@ -390,6 +397,10 @@ export default function App() {
           onDelete={askDelete}
           onToggleFavorite={toggleFavorite}
         />
+      )}
+
+      {accountOpen && (
+        <AccountMenu sync={sync} onClose={() => setAccountOpen(false)} notify={notify} />
       )}
 
       {exploreOpen && !formTarget && (

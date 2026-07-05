@@ -26,6 +26,37 @@ function markAllSeen() {
   }
 }
 
+/*
+ * Deletions made while signed out (or offline) are queued so cloud sync
+ * can propagate them later instead of resurrecting deleted rows.
+ */
+const DELETES_KEY = "compete.pendingDeletes.v1";
+
+export function recordPendingDelete(id) {
+  try {
+    const cur = JSON.parse(localStorage.getItem(DELETES_KEY)) ?? [];
+    if (!cur.includes(id)) localStorage.setItem(DELETES_KEY, JSON.stringify([...cur, id]));
+  } catch {
+    // Best-effort only.
+  }
+}
+
+export function loadPendingDeletes() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(DELETES_KEY)) ?? []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function clearPendingDeletes() {
+  try {
+    localStorage.removeItem(DELETES_KEY);
+  } catch {
+    // Best-effort only.
+  }
+}
+
 const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 
 /** Retired sample entries from early versions — removed if still untouched. */

@@ -93,6 +93,12 @@ export const CalendarIcon = (p) => (
   </Icon>
 );
 
+export const CloudIcon = (p) => (
+  <Icon {...p}>
+    <path d="M7 18.5h10a4 4 0 0 0 .8-7.9 5.5 5.5 0 0 0-10.8-1A4.5 4.5 0 0 0 7 18.5z" />
+  </Icon>
+);
+
 export const CompassIcon = (p) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="8.5" />
