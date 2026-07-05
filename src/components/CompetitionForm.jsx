@@ -17,8 +17,8 @@ const empty = {
   repeatsYearly: false,
 };
 
-export default function CompetitionForm({ initial, onSave, onClose }) {
-  const editing = Boolean(initial);
+export default function CompetitionForm({ initial, onSave, onClose, isDraft = false }) {
+  const editing = Boolean(initial) && !isDraft;
   const [form, setForm] = useState(() =>
     initial
       ? { ...initial, deadline: toLocalInputValue(initial.deadline) }
@@ -53,7 +53,7 @@ export default function CompetitionForm({ initial, onSave, onClose }) {
     errors[key] ? <p className="mt-1 text-[12.5px] font-medium text-ember">{errors[key]}</p> : null;
 
   return (
-    <Modal title={editing ? "Edit competition" : "Add competition"} onClose={onClose} wide>
+    <Modal title={editing ? "Edit competition" : isDraft ? "Track competition" : "Add competition"} onClose={onClose} wide>
       <form onSubmit={submit} noValidate className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="field-label" htmlFor="f-title">Title</label>

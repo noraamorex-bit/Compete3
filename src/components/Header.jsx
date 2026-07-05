@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import {
-  CloseIcon, DownloadIcon, MoonIcon, PlusIcon, SearchIcon, SunIcon,
-  TrophyIcon, UploadIcon,
+  CloseIcon, CompassIcon, DownloadIcon, MoonIcon, PlusIcon, SearchIcon,
+  SunIcon, TrophyIcon, UploadIcon,
 } from "./Icons.jsx";
 
 export default function Header({
-  query, onQuery, dark, onToggleTheme, onAdd, onExport, onImportFile,
+  query, onQuery, dark, onToggleTheme, onAdd, onExplore, onExport, onImportFile,
 }) {
   const inputRef = useRef(null);
   const fileRef = useRef(null);
@@ -67,6 +67,15 @@ export default function Header({
             </kbd>
           )}
         </label>
+
+        <button
+          onClick={onExplore}
+          className="icon-btn !h-10 !w-10 text-marigold-deep hover:!text-marigold-deep dark:text-marigold dark:hover:!text-marigold"
+          aria-label="Explore competitions"
+          title="Explore real competitions"
+        >
+          <CompassIcon size={20} />
+        </button>
 
         <button
           onClick={onExport}

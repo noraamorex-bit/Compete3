@@ -1,6 +1,6 @@
-import { InboxIcon, PlusIcon } from "./Icons.jsx";
+import { CompassIcon, InboxIcon, PlusIcon } from "./Icons.jsx";
 
-export default function EmptyState({ filtered, onAdd, onClear }) {
+export default function EmptyState({ filtered, onAdd, onClear, onExplore }) {
   return (
     <div className="card flex flex-col items-center px-6 py-16 text-center animate-rise">
       <span className="floaty relative grid h-16 w-16 place-items-center rounded-2xl bg-mist text-ink-faint ring-1 ring-ink/5 dark:bg-night/70 dark:text-night-soft dark:ring-night-edge">
@@ -18,9 +18,14 @@ export default function EmptyState({ filtered, onAdd, onClear }) {
       {filtered ? (
         <button onClick={onClear} className="btn-quiet mt-6">Clear filters</button>
       ) : (
-        <button onClick={onAdd} className="btn-primary mt-6">
-          <PlusIcon size={17} /> Add your first competition
-        </button>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <button onClick={onExplore} className="btn-primary">
+            <CompassIcon size={17} /> Explore real competitions
+          </button>
+          <button onClick={onAdd} className="btn-quiet">
+            <PlusIcon size={17} /> Add your own
+          </button>
+        </div>
       )}
     </div>
   );

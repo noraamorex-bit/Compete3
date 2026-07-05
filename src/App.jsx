@@ -7,6 +7,7 @@ import CompetitionForm from "./components/CompetitionForm.jsx";
 import CompetitionDetails from "./components/CompetitionDetails.jsx";
 import ConfirmDialog from "./components/ConfirmDialog.jsx";
 import EmptyState from "./components/EmptyState.jsx";
+import Explore from "./components/Explore.jsx";
 import { useCompetitions } from "./hooks/useCompetitions.js";
 import { useTheme } from "./hooks/useTheme.js";
 import { useNow } from "./hooks/useNow.js";
@@ -98,8 +99,9 @@ export default function App() {
   const deferredQuery = useDeferredValue(query); // keeps typing snappy on big lists
   const [filters, setFilters] = useState(NO_FILTERS);
   const [detailsId, setDetailsId] = useState(null);
-  const [formTarget, setFormTarget] = useState(null); // null | "new" | competition
+  const [formTarget, setFormTarget] = useState(null); // null | "new" | competition | catalog draft
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [exploreOpen, setExploreOpen] = useState(false);
   const [sort, setSort] = useState("deadline");
 
   const [toast, setToast] = useState(null); // { msg, action?: { label, run } }
@@ -166,7 +168,8 @@ export default function App() {
   const askDelete = useCallback((c) => setDeleteTarget(c), []);
 
   const handleSave = (data) => {
-    if (formTarget === "new") {
+    // Catalog drafts carry an id that isn't in the list yet — treat as new.
+    if (formTarget === "new" || !competitions.some((c) => c.id === formTarget.id)) {
       const item = add(data);
       setDetailsId(item.id);
     } else {
@@ -225,6 +228,7 @@ export default function App() {
         dark={dark}
         onToggleTheme={toggle}
         onAdd={() => setFormTarget("new")}
+        onExplore={() => setExploreOpen(true)}
         onExport={handleExport}
         onImportFile={handleImportFile}
       />
@@ -269,7 +273,12 @@ export default function App() {
         <FilterBar filters={filters} onChange={setFilters} counts={counts} sort={sort} onSort={setSort} />
 
         {visible.length === 0 ? (
-          <EmptyState filtered={filtering} onAdd={() => setFormTarget("new")} onClear={clearFilters} />
+          <EmptyState
+            filtered={filtering}
+            onAdd={() => setFormTarget("new")}
+            onClear={clearFilters}
+            onExplore={() => setExploreOpen(true)}
+          />
         ) : (
           <>
             {closingSoon.length > 0 && (
@@ -316,9 +325,23 @@ export default function App() {
         />
       )}
 
+      {exploreOpen && !formTarget && (
+        <Explore
+          onClose={() => setExploreOpen(false)}
+          onPick={(draft) => {
+            setExploreOpen(false);
+            setFormTarget(draft);
+          }}
+          trackedIds={new Set(competitions.map((c) => c.catalogId).filter(Boolean))}
+        />
+      )}
+
       {formTarget && (
         <CompetitionForm
           initial={formTarget === "new" ? null : formTarget}
+          isDraft={
+            formTarget !== "new" && !competitions.some((c) => c.id === formTarget.id)
+          }
           onSave={handleSave}
           onClose={() => setFormTarget(null)}
         />

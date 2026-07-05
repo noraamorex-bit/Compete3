@@ -93,6 +93,13 @@ export const CalendarIcon = (p) => (
   </Icon>
 );
 
+export const CompassIcon = (p) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="m15.2 8.8-1.8 4.6-4.6 1.8 1.8-4.6z" />
+  </Icon>
+);
+
 export const DownloadIcon = (p) => (
   <Icon {...p}><path d="M12 4v10m0 0-4-4m4 4 4-4M5 19.5h14" /></Icon>
 );
