@@ -16,16 +16,20 @@ export default function AccountMenu({ sync, onClose, notify }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
 
   const submit = async (e) => {
     e.preventDefault();
     if (!email.trim() || busy) return;
     setBusy(true);
+    setError(null);
     try {
       await signIn(email.trim());
       setSent(true);
-    } catch {
-      notify("Couldn't send the link — check the email address");
+    } catch (err) {
+      // Surface the real reason — auth failures have many distinct causes.
+      setError(err?.message || err?.error_description || String(err));
+      notify("Couldn't send the sign-in link");
     } finally {
       setBusy(false);
     }
@@ -93,6 +97,11 @@ export default function AccountMenu({ sync, onClose, notify }) {
             onChange={(e) => setEmail(e.target.value)}
             autoFocus
           />
+          {error && (
+            <p className="mt-2 rounded-xl bg-ember/10 px-3 py-2 text-[13px] font-medium text-ember">
+              {error}
+            </p>
+          )}
           <div className="mt-5 flex justify-end gap-2">
             <button type="button" onClick={onClose} className="btn-quiet">Cancel</button>
             <button type="submit" disabled={busy} className="btn-primary">
